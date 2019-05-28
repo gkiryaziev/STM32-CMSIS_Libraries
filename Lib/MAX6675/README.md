@@ -1,0 +1,5 @@
+#### Read Data (SPI)
+![Alt text](max6675_data_spi.png?raw=true "max6675_data_spi")
+#### Read Data (Bitbang)
+![Alt text](max6675_data_bitbang.png?raw=true "max6675_data_bitbang")
+![Alt text](max6675_data_bitbang_terminal.png?raw=true "max6675_data_bitbang_terminal")

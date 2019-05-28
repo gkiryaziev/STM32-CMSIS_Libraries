@@ -1,0 +1,5 @@
+.settings/
+Debug/
+.cproject
+.project
+*.launch
