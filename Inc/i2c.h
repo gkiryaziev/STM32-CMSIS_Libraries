@@ -14,22 +14,10 @@ extern "C" {
 
 #include "stm32f1xx.h"
 
-// --------------------------------------------------------------------------
-//#define I2C_FAST_MODE												// 400kHz
-// --------------------------------------------------------------------------
-
-#define I2C_ADDRESS_0BIT_Pos	(0U)
-#define I2C_ADDRESS_0BIT_Msk	(0x1U << I2C_ADDRESS_0BIT_Pos)		// 0x00000001
-#define I2C_ADDRESS_0BIT		I2C_ADDRESS_0BIT_Msk				// I2C address read/write bit
-
-#define TIMEOUT					(uint32_t)1000000					// Timeout for I2C_SendAddress
-#define PCLK1_FREQUENCY			(uint32_t)(SystemCoreClock / 2)		// PCLK1 frequency
-
-#ifdef I2C_FAST_MODE
-	#define I2C_CLOCK			(uint32_t)400000
-#else
-	#define I2C_CLOCK			(uint32_t)100000
-#endif
+typedef enum {
+	I2C_STANDARD,
+	I2C_FAST
+} I2C_Mode_Type;
 
 typedef enum {
 	I2C_TRANSMITTER,
@@ -46,7 +34,7 @@ typedef enum {
 	I2C_OK
 } I2C_Status_Type;
 
-void I2C1_Init(void);
+void I2C1_Init(I2C_Mode_Type mode);
 void I2C1_Start(void);
 void I2C1_Stop(void);
 I2C_Status_Type I2C1_SendAddress(uint8_t address, I2C_Direction_Type direction);
