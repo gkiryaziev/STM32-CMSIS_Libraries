@@ -3,6 +3,11 @@
  *
  *  Created on: 10.05.2019
  *      Author: Admin
+ *
+ *  NSS      - PA4 (General purpose output push-pull)	(nCS)
+ *  SCK      - PA5 (Alternate function push-pull)		(SCL)
+ *  MISO     - PA6 (Input floating / Input pull-up)		(AD0/SDO)
+ *  MOSI     - PA7 (Alternate function push-pull)		(SDA)
  */
 
 #include "MPU9255.h"

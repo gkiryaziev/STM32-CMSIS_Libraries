@@ -84,11 +84,11 @@ typedef enum {
 #define AK8963_MAG_FS_4800UT			((float)0.6)	// 0.6 uT/LSB
 
 typedef struct {
-	int8_t GyroX;
+	float GyroX;
 	int16_t GyroX_ADC;
-	int8_t GyroY;
+	float GyroY;
 	int16_t GyroY_ADC;
-	int8_t GyroZ;
+	float GyroZ;
 	int16_t GyroZ_ADC;
 
 	float AccelX;

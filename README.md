@@ -27,4 +27,4 @@ IDE - Atollic TrueSTUDIO for STM32 9.3.0
 - **HCSR04**
 - **DHT11**
 
-*All libraries are under active development.*
+*All libraries are under development and are provided as is.*
