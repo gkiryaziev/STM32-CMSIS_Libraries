@@ -11,22 +11,23 @@
 #include "LSM303DLHC.h"
 
 uint16_t mag_gain_x_y, mag_gain_z;
+float accel_sensitivity;
 
+// ---------------------------------------------
+// LSM303DLHC_ReadRegister
+// ---------------------------------------------
 uint8_t LSM303DLHC_ReadRegister(uint8_t address, uint8_t reg_address) {
 
-	// I2C Send
-	I2C1_Start();
-	I2C1_SendAddress(address, I2C_TRANSMITTER);
-	I2C1_SendData(reg_address);
+	uint8_t data[1] = {0};
 
-	// I2C Receive
-	I2C1_Start();
-	I2C1_SendAddress(address, I2C_RECEIVER);
-	I2C1_Stop();
+	LSM303DLHC_ReadRegisters(address, reg_address, data, 1);
 
-	return I2C1_ReceiveData(I2C_NACK);
+	return data[0];
 }
 
+// ---------------------------------------------
+// LSM303DLHC_ReadRegisters
+// ---------------------------------------------
 void LSM303DLHC_ReadRegisters(uint8_t address, uint8_t reg_address, uint8_t *data, uint8_t size) {
 
 	uint8_t count = 0;
@@ -48,16 +49,151 @@ void LSM303DLHC_ReadRegisters(uint8_t address, uint8_t reg_address, uint8_t *dat
 	data[count] = I2C1_ReceiveData(I2C_NACK);
 }
 
+// ---------------------------------------------
+// LSM303DLHC_WriteRegister
+// ---------------------------------------------
 void LSM303DLHC_WriteRegister(uint8_t address, uint8_t reg_address, uint8_t data) {
+
+	uint8_t tempdata[1] = { data };
+
+	LSM303DLHC_WriteRegisters(address, reg_address, tempdata, 1);
+}
+
+// ---------------------------------------------
+// LSM303DLHC_WriteRegisters
+// ---------------------------------------------
+void LSM303DLHC_WriteRegisters(uint8_t address, uint8_t reg_address, uint8_t *data, uint8_t size) {
 
 	// I2C Send
 	I2C1_Start();
 	I2C1_SendAddress(address, I2C_TRANSMITTER);
 	I2C1_SendData(reg_address);
-	I2C1_SendData(data);
+
+	for (int8_t i = 0; i < size; ++i) {
+		I2C1_SendData(data[i]);
+	}
+
 	I2C1_Stop();
 }
 
+// ---------------------------------------------
+// SetAccelerometerDataRate
+// ---------------------------------------------
+void LSM303DLHC_SetAccelerometerDataRate(LSM303DLHC_Accel_DataRate_Type rate) {
+
+	uint8_t tempval = 0;
+
+	tempval |= (rate << 4);		// Data rate selection.
+//	tempval |= (1 << 3);		// 1: low-power mode
+	tempval |= (1 << 2);		// 1: Z-axis enabled
+	tempval |= (1 << 1);		// 1: Y-axis enabled
+	tempval |= (1 << 0);		// 1: X-axis enabled
+
+	LSM303DLHC_WriteRegister(LSM303DLHC_ACCEL_ADDRESS, LSM303DLHC_CTRL_REG1_A, tempval);
+}
+
+// ---------------------------------------------
+// LSM303DLHC_SetAccelerometerScale
+// ---------------------------------------------
+void LSM303DLHC_SetAccelerometerScale(LSM303DLHC_Accel_Scale_Type scale) {
+
+	uint8_t tempval = 0;
+
+//	tempval |= (1 << 7);		// 0: continuous update, 1: output registers not updated until MSB and LSB have been read
+//	tempval |= (1 << 6);		// 0: data LSB @ lower address, 1: data MSB @ lower address
+	tempval |= (scale << 4);	// Full-scale selection.
+	tempval |= (1 << 3);		// 0: high-resolution disable, 1: high-resolution enable
+//	tempval |= (1 << 0);		// 0: 4-wire interface, 1: 3-wire interface
+
+	LSM303DLHC_WriteRegister(LSM303DLHC_ACCEL_ADDRESS, LSM303DLHC_CTRL_REG4_A, tempval);
+
+	switch (scale) {
+	case LSM303DLHC_ACCEL_SCALE_2G:
+		accel_sensitivity = 1 / 1000.0;		// mG
+		break;
+	case LSM303DLHC_ACCEL_SCALE_4G:
+		accel_sensitivity = 2 / 1000.0;		// mG;
+		break;
+	case LSM303DLHC_ACCEL_SCALE_8G:
+		accel_sensitivity = 4 / 1000.0;		// mG;
+		break;
+	case LSM303DLHC_ACCEL_SCALE_16G:
+		accel_sensitivity = 12 / 1000.0;	// mG;
+		break;
+	}
+}
+
+// ---------------------------------------------
+// SetMagnetometerDataRate
+// ---------------------------------------------
+void LSM303DLHC_SetMagnetometerDataRate(LSM303DLHC_Mag_DataRate_Type rate) {
+
+	uint8_t tempval = 0;
+
+	tempval |= (1 << 7);		// 1: temperature sensor enabled
+	tempval |= (rate << 2);
+
+	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_CRA_REG_M, tempval);
+}
+
+// ---------------------------------------------
+// LSM303DLHC_SetMagnetometerRange
+// ---------------------------------------------
+void LSM303DLHC_SetMagnetometerRange(LSM303DLHC_Mag_Range_Type range) {
+
+	uint8_t tempval = 0;
+
+	tempval |= (range << 5);
+
+	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_CRB_REG_M, tempval);
+
+	switch (range) {
+	case LSM303DLHC_MAG_RANGE_1_3GAUSS:
+		mag_gain_x_y = 1100;
+		mag_gain_z = 980;
+		break;
+	case LSM303DLHC_MAG_RANGE_1_9GAUSS:
+		mag_gain_x_y = 855;
+		mag_gain_z = 760;
+		break;
+	case LSM303DLHC_MAG_RANGE_2_5GAUSS:
+		mag_gain_x_y = 670;
+		mag_gain_z = 600;
+		break;
+	case LSM303DLHC_MAG_RANGE_4_0GAUSS:
+		mag_gain_x_y = 450;
+		mag_gain_z = 400;
+		break;
+	case LSM303DLHC_MAG_RANGE_4_7GAUSS:
+		mag_gain_x_y = 400;
+		mag_gain_z = 355;
+		break;
+	case LSM303DLHC_MAG_RANGE_5_6GAUSS:
+		mag_gain_x_y = 330;
+		mag_gain_z = 295;
+		break;
+	case LSM303DLHC_MAG_RANGE_8_1GAUSS:
+		mag_gain_x_y = 230;
+		mag_gain_z = 205;
+		break;
+	}
+}
+
+// ---------------------------------------------
+// LSM303DLHC_SetMagnetometerMode
+// ---------------------------------------------
+void LSM303DLHC_SetMagnetometerMode(LSM303DLHC_Mag_Mode_Type mode) {
+
+	uint8_t tempval = 0;
+
+	tempval |= (mode << 0);
+
+	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_MR_REG_M, tempval);
+}
+
+// ---------------------------------------------
+// LSM303DLHC_GetStatus
+// ---------------------------------------------
 uint8_t LSM303DLHC_GetStatus(void) {
 
 	uint8_t accel_status = 0;
@@ -78,14 +214,23 @@ uint8_t LSM303DLHC_GetStatus(void) {
 	return 1;
 }
 
+// ---------------------------------------------
+// LSM303DLHC_Init
+// ---------------------------------------------
 void LSM303DLHC_Init(void) {
 
+	// Accel init
+	LSM303DLHC_SetAccelerometerDataRate(LSM303DLHC_ACCEL_DATA_RATE_10HZ);
+	LSM303DLHC_SetAccelerometerScale(LSM303DLHC_ACCEL_SCALE_2G);
 	// Mag init
-	LSM303DLHC_SetMagnetometerDataRate(LSM303DLHC_MAG_DATA_RATE_15);
-	LSM303DLHC_SetMagnetometerRange(LSM303DLHC_MAG_RANGE_1_3);
+	LSM303DLHC_SetMagnetometerDataRate(LSM303DLHC_MAG_DATA_RATE_15HZ);
+	LSM303DLHC_SetMagnetometerRange(LSM303DLHC_MAG_RANGE_1_3GAUSS);
 	LSM303DLHC_SetMagnetometerMode(LSM303DLHC_MAG_MODE_CONTINUOUS);
 }
 
+// ---------------------------------------------
+// LSM303DLHC_GetTemperature
+// ---------------------------------------------
 int16_t LSM303DLHC_GetTemperature(void) {
 
 	uint8_t data[2] = {0};
@@ -95,12 +240,35 @@ int16_t LSM303DLHC_GetTemperature(void) {
 	return (int16_t)((data[0] << 4) | (data[1] >> 4));
 }
 
+// ---------------------------------------------
+// LSM303DLHC_GetAccelerometer
+// ---------------------------------------------
+void LSM303DLHC_GetAccelerometer(LSM303DLHC_TypeDef *lsm303dlhc) {
+
+	uint8_t data[6] = {0};
+
+	LSM303DLHC_ReadRegisters(LSM303DLHC_ACCEL_ADDRESS, LSM303DLHC_OUT_X_L_A | LSM303DLHC_MULTIPLE_FLAG, data, 6);
+
+	// LSB first
+	lsm303dlhc->AccelX_ADC = (int16_t)((data[1] << 8) | data[0]);
+	lsm303dlhc->AccelY_ADC = (int16_t)((data[3] << 8) | data[2]);
+	lsm303dlhc->AccelZ_ADC = (int16_t)((data[5] << 8) | data[4]);
+
+	lsm303dlhc->AccelX = (float)lsm303dlhc->AccelX_ADC * accel_sensitivity;
+	lsm303dlhc->AccelY = (float)lsm303dlhc->AccelY_ADC * accel_sensitivity;
+	lsm303dlhc->AccelZ = (float)lsm303dlhc->AccelZ_ADC * accel_sensitivity;
+}
+
+// ---------------------------------------------
+// LSM303DLHC_GetMagnetometer
+// ---------------------------------------------
 void LSM303DLHC_GetMagnetometer(LSM303DLHC_TypeDef *lsm303dlhc) {
 
 	uint8_t data[6] = {0};
 
 	LSM303DLHC_ReadRegisters(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_OUT_X_H_M, data, 6);
 
+	// MSB first
 	lsm303dlhc->MagX_ADC = (int16_t)((data[0] << 8) | data[1]);
 	lsm303dlhc->MagY_ADC = (int16_t)((data[2] << 8) | data[3]);
 	lsm303dlhc->MagZ_ADC = (int16_t)((data[4] << 8) | data[5]);
@@ -108,63 +276,4 @@ void LSM303DLHC_GetMagnetometer(LSM303DLHC_TypeDef *lsm303dlhc) {
 	lsm303dlhc->MagX = (float)lsm303dlhc->MagX_ADC / (float)mag_gain_x_y;
 	lsm303dlhc->MagY = (float)lsm303dlhc->MagY_ADC / (float)mag_gain_x_y;
 	lsm303dlhc->MagZ = (float)lsm303dlhc->MagZ_ADC / (float)mag_gain_z;
-}
-
-void LSM303DLHC_SetMagnetometerDataRate(LSM303DLHC_Mag_DataRate_Type rate) {
-
-	uint8_t tempval = 0;
-
-	tempval |= (1 << 7);		// 1: temperature sensor enabled
-	tempval |= (rate << 2);
-
-	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_CRA_REG_M, tempval);
-}
-
-void LSM303DLHC_SetMagnetometerRange(LSM303DLHC_Mag_Range_Type range) {
-
-	uint8_t tempval = 0;
-
-	tempval |= (range << 5);
-
-	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_CRB_REG_M, tempval);
-
-	switch (range) {
-	case LSM303DLHC_MAG_RANGE_1_3:
-		mag_gain_x_y = 1100;
-		mag_gain_z = 980;
-		break;
-	case LSM303DLHC_MAG_RANGE_1_9:
-		mag_gain_x_y = 855;
-		mag_gain_z = 760;
-		break;
-	case LSM303DLHC_MAG_RANGE_2_5:
-		mag_gain_x_y = 670;
-		mag_gain_z = 600;
-		break;
-	case LSM303DLHC_MAG_RANGE_4_0:
-		mag_gain_x_y = 450;
-		mag_gain_z = 400;
-		break;
-	case LSM303DLHC_MAG_RANGE_4_7:
-		mag_gain_x_y = 400;
-		mag_gain_z = 355;
-		break;
-	case LSM303DLHC_MAG_RANGE_5_6:
-		mag_gain_x_y = 330;
-		mag_gain_z = 295;
-		break;
-	case LSM303DLHC_MAG_RANGE_8_1:
-		mag_gain_x_y = 230;
-		mag_gain_z = 205;
-		break;
-	}
-}
-
-void LSM303DLHC_SetMagnetometerMode(LSM303DLHC_Mag_Mode_Type mode) {
-
-	uint8_t tempval = 0;
-
-	tempval |= (mode << 0);
-
-	LSM303DLHC_WriteRegister(LSM303DLHC_MAG_ADDRESS, LSM303DLHC_MR_REG_M, tempval);
 }
