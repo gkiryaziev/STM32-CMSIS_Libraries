@@ -1,7 +1,7 @@
 /*
  * BMP280.h
  *
- *  Created on: 4 мая 2019 г.
+ *  Created on: 04.05.2019
  *      Author: Admin
  */
 
@@ -13,12 +13,12 @@
 
 #define BMP280_ADDRESS						0x76
 
-// Preset for Normal mode
+// Preset Meas for Normal mode
 #define BMP280_PRESET_CTRL_MEAS_NORMAL		(BMP280_CTRL_MEAS_OSRS_T_X16 | BMP280_CTRL_MEAS_OSRS_P_X16 | BMP280_CTRL_MEAS_MODE_NORMAL)
-#define BMP280_PRESET_CONFIG_NORMAL			(BMP280_CONFIG_T_SB_125 | BMP280_CONFIG_FILTER_COEFF_2 | BMP280_CONFIG_SPI3W_OFF)
-// Preset for Forced mode
+// Preset Meas for Forced mode
 #define BMP280_PRESET_CTRL_MEAS_FORCED		(BMP280_CTRL_MEAS_OSRS_T_X16 | BMP280_CTRL_MEAS_OSRS_P_X16 | BMP280_CTRL_MEAS_MODE_FORCED)
-#define BMP280_PRESET_CONFIG_FORCED			(BMP280_CONFIG_T_SB_125 | BMP280_CONFIG_FILTER_COEFF_2 | BMP280_CONFIG_SPI3W_OFF)
+// Preset Config
+#define BMP280_PRESET_CONFIG				(BMP280_CONFIG_T_SB_125 | BMP280_CONFIG_FILTER_COEFF_2 | BMP280_CONFIG_SPI3W_OFF)
 
 // ---------------------------------------------
 
@@ -168,19 +168,27 @@
 #define BMP280_CONFIG_SPI3W_OFF				0x00
 #define BMP280_CONFIG_SPI3W_ON				0x01
 
+typedef enum {
+	 BMP280_Sleep  = 0x0,
+	 BMP280_Forced = 0x1,
+	 BMP280_Normal = 0x3
+} BMP280_Mode_Type;
 
 uint8_t BMP280_ReadRegister(uint8_t address);
+void BMP280_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size);
 void BMP280_WriteRegister(uint8_t address, uint8_t data);
 uint8_t BMP280_GetStatus();
-void BMP280_Init();
+void BMP280_Init(BMP280_Mode_Type mode);
 void BMP280_Reset();
 void BMP280_SetRegisterCtrlMeas(uint8_t ctrl_meas);
 void BMP280_SetRegisterConfig(uint8_t config);
 double BMP280_Compensate_Temperature_Double(int32_t adc_T);
+double BMP280_Compensate_Temperature_Double2(int32_t adc_T);
 double BMP280_Compensate_Pressure_Double(int32_t adc_P);
-double BMP280_GetTemperatureNormal();
-double BMP280_GetPressureNormal();
-void BMP280_GetTemperatureAndPressureNormal(double *temperature, double *pressure);
+double BMP280_Compensate_Pressure_Double2(int32_t adc_P);
+double BMP280_GetTemperature();
+double BMP280_GetPressure();
+void BMP280_GetTemperatureAndPressure(double *temperature, double *pressure);
 void BMP280_GetTemperatureAndPressureForced(double *temperature, double *pressure);
 
 #endif /* BMP280_H_ */
