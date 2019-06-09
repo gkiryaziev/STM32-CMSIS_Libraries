@@ -145,24 +145,9 @@ void BMP280_SetRegisterConfig(uint8_t config) {
 }
 
 // --------------------------------------------------
-// BMP280_Compensate_Temperature_Double
+// BMP280_Compensate_Temperature
 // --------------------------------------------------
-double BMP280_Compensate_Temperature_Double(int32_t adc_T) {
-
-	double var1, var2;
-
-	var1 = ((double)adc_T / 16384.0 - (double)BMP280_dig_T1 / 1024.0) * (double)BMP280_dig_T2;
-	var2 = (((double)adc_T / 131072.0 - (double)BMP280_dig_T1 / 8192.0)	*
-		    ((double)adc_T / 131072.0 - (double)BMP280_dig_T1 / 8192.0)) * ((double)BMP280_dig_T3);
-	BMP280_t_fine = (int32_t)(var1 + var2);
-
-	return (var1 + var2) / 5120.0;
-}
-
-// --------------------------------------------------
-// BMP280_Compensate_Temperature_Double2
-// --------------------------------------------------
-double BMP280_Compensate_Temperature_Double2(int32_t adc_T)
+double BMP280_Compensate_Temperature(int32_t adc_T)
 {
 	int32_t var1, var2, t;
 
@@ -172,41 +157,13 @@ double BMP280_Compensate_Temperature_Double2(int32_t adc_T)
 	BMP280_t_fine = var1 + var2;
 	t = (BMP280_t_fine * 5 + 128) >> 8;
 
-	return (double)t / 100;
+	return (double)t / 100.0;
 }
 
 // --------------------------------------------------
-// BMP280_Compensate_Pressure_Double (Pa)
+// BMP280_Compensate_Pressure (Pa)
 // --------------------------------------------------
-double BMP280_Compensate_Pressure_Double(int32_t adc_P) {
-
-	double var1, var2, pressure;
-
-    var1 = ((double)BMP280_t_fine / 2.0) - 64000.0;
-    var2 = var1 * var1 * (double)BMP280_dig_P6 / 32768.0;
-    var2 = var2 + var1 * (double)BMP280_dig_P5 * 2.0;
-    var2 = (var2 / 4.0) + ((double)BMP280_dig_P4 * 65536.0);
-    var1 = ((double)BMP280_dig_P3 * var1 * var1 / 524288.0 +
-    		(double)BMP280_dig_P2 * var1) / 524288.0;
-    var1 = (1.0 + var1 / 32768.0) * (double)BMP280_dig_P1;
-
-    if (var1 == 0.0) {
-        return 0; // avoid exception caused by division by zero
-    }
-
-    pressure = 1048576.0 - (double)adc_P;
-    pressure = (pressure - (var2 / 4096.0)) * 6250.0 / var1;
-    var1 = (double)BMP280_dig_P9 * pressure * pressure / 2147483648.0;
-    var2 = pressure * (double)BMP280_dig_P8 / 32768.0;
-    pressure = pressure + (var1 + var2 + (double)BMP280_dig_P7) / 16.0;
-
-    return pressure;
-}
-
-// --------------------------------------------------
-// BMP280_Compensate_Pressure_Double2 (Pa)
-// --------------------------------------------------
-double BMP280_Compensate_Pressure_Double2(int32_t adc_P)
+double BMP280_Compensate_Pressure(int32_t adc_P)
 {
 	int64_t var1, var2, p;
 
@@ -240,7 +197,7 @@ double BMP280_GetTemperature() {
 
 	adc_T = (int32_t)((data[0] << 12) | (data[1] << 4) | (data[2] >> 4));
 
-	return BMP280_Compensate_Temperature_Double2(adc_T);
+	return BMP280_Compensate_Temperature(adc_T);
 }
 
 double BMP280_GetPressure() {
@@ -252,7 +209,7 @@ double BMP280_GetPressure() {
 
 	adc_P = (int32_t)((data[0] << 12) | (data[1] << 4) | (data[0] >> 4));
 
-	return BMP280_Compensate_Pressure_Double2(adc_P);
+	return BMP280_Compensate_Pressure(adc_P);
 }
 
 void BMP280_GetTemperatureAndPressure(double *temperature, double *pressure) {
