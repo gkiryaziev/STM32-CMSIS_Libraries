@@ -207,15 +207,23 @@ double BMP280_GetPressure() {
 
 	BMP280_ReadRegisters(BMP280_REGISTER_PRESSURE_MSB, data, 3);
 
-	adc_P = (int32_t)((data[0] << 12) | (data[1] << 4) | (data[0] >> 4));
+	adc_P = (int32_t)((data[0] << 12) | (data[1] << 4) | (data[2] >> 4));
 
 	return BMP280_Compensate_Pressure(adc_P);
 }
 
 void BMP280_GetTemperatureAndPressure(double *temperature, double *pressure) {
 
-	*temperature = BMP280_GetTemperature();
-	*pressure = BMP280_GetPressure();
+	int32_t adc_T, adc_P;
+	uint8_t data[6] = {0};
+
+	BMP280_ReadRegisters(BMP280_REGISTER_PRESSURE_MSB, data, 6);
+
+	adc_P = (int32_t)((data[0] << 12) | (data[1] << 4) | (data[2] >> 4));
+	adc_T = (int32_t)((data[3] << 12) | (data[4] << 4) | (data[5] >> 4));
+
+	*temperature = BMP280_Compensate_Temperature(adc_T);
+	*pressure = BMP280_Compensate_Pressure(adc_P);
 }
 
 void BMP280_GetTemperatureAndPressureForced(double *temperature, double *pressure) {
