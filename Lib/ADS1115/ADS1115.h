@@ -69,6 +69,8 @@
  * -----------------------------------------------------------------------------------
  */
 
+#define ADS1115_ADDRESS				0x48
+
 #define ADS1115_OS_Pos				(15U)
 #define ADS1115_OS_Msk				(0x1U << ADS1115_OS_Pos)
 #define ADS1115_OS					ADS1115_OS_Msk
@@ -116,10 +118,15 @@
 #define ADS1115_COMP_QUE_0			(0x1U << ADS1115_COMP_QUE_Pos)
 #define ADS1115_COMP_QUE_1			(0x2U << ADS1115_COMP_QUE_Pos)
 
-#define ADS1115_CONFIG_REGISTER		0x01U
-#define ADS1115_CONVERSION_REGISTER 0x00U
+#define ADS1115_REG_CONVERSION		0x00
+#define ADS1115_REG_CONFIG			0x01
+#define ADS1115_REG_LO_THRESH		0x02
+#define ADS1115_REG_HI_THRESH		0x03
 
-#define ADS1115_ADDRESS				0x48U
+void ADS1115_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size);
+void ADS1115_WriteRegisters(uint8_t address, uint8_t *data, uint8_t size);
+
+void ADS1115_Init(void);
 
 uint8_t ADS1115_GetStatus(void);
 uint16_t ADS1115_ReadChannel(uint8_t channel);
