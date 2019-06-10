@@ -26,14 +26,14 @@
  *       |                | 111 : AINP = AIN3 and AINN = GND
  * -----------------------------------------------------------------------------------
  * 11:9  | PGA [2:0]      | Programmable gain amplifier configuration
- *       |                | 000 : FSR = ±6.144 V
- *       |                | 001 : FSR = ±4.096 V
- *       |                | 010 : FSR = ±2.048 V (default)
- *       |                | 011 : FSR = ±1.024 V
- *       |                | 100 : FSR = ±0.512 V
- *       |                | 101 : FSR = ±0.256 V
- *       |                | 110 : FSR = ±0.256 V
- *       |                | 111 : FSR = ±0.256 V
+ *       |                | 000 : FSR = В±6.144 V
+ *       |                | 001 : FSR = В±4.096 V
+ *       |                | 010 : FSR = В±2.048 V (default)
+ *       |                | 011 : FSR = В±1.024 V
+ *       |                | 100 : FSR = В±0.512 V
+ *       |                | 101 : FSR = В±0.256 V
+ *       |                | 110 : FSR = В±0.256 V
+ *       |                | 111 : FSR = В±0.256 V
  * -----------------------------------------------------------------------------------
  * 8     | MODE           | Device operating mode
  *       |                | 0   : Continuous-conversion mode
@@ -67,9 +67,27 @@
  *       |                | 10  : Assert after four conversions
  *       |                | 11  : Disable comparator and set ALERT/RDY pin to high-impedance (default)
  * -----------------------------------------------------------------------------------
+ *
+ * ----------------------------------------------------
+ * Table 3. Full-Scale Range and Corresponding LSB Size
+ * ----------------------------------------------------
+ *   FSR       | LSB SIZE
+ * ----------------------------------------------------
+ *   ±6.144 V  | 187.5  μV
+ *   ±4.096 V  | 125    μV
+ *   ±2.048 V  | 62.5   μV
+ *   ±1.024 V  | 31.25  μV
+ *   ±0.512 V  | 15.625 μV
+ *   ±0.256 V  | 7.8125 μV
+ * ----------------------------------------------------
  */
 
 #define ADS1115_ADDRESS				0x48
+
+#define ADS1115_REG_CONVERSION		0x00
+#define ADS1115_REG_CONFIG			0x01
+#define ADS1115_REG_LO_THRESH		0x02
+#define ADS1115_REG_HI_THRESH		0x03
 
 #define ADS1115_OS_Pos				(15U)
 #define ADS1115_OS_Msk				(0x1U << ADS1115_OS_Pos)
@@ -118,17 +136,10 @@
 #define ADS1115_COMP_QUE_0			(0x1U << ADS1115_COMP_QUE_Pos)
 #define ADS1115_COMP_QUE_1			(0x2U << ADS1115_COMP_QUE_Pos)
 
-#define ADS1115_REG_CONVERSION		0x00
-#define ADS1115_REG_CONFIG			0x01
-#define ADS1115_REG_LO_THRESH		0x02
-#define ADS1115_REG_HI_THRESH		0x03
-
 void ADS1115_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size);
 void ADS1115_WriteRegisters(uint8_t address, uint8_t *data, uint8_t size);
-
-void ADS1115_Init(void);
-
 uint8_t ADS1115_GetStatus(void);
-uint16_t ADS1115_ReadChannel(uint8_t channel);
+uint16_t ADS1115_ReadADC(uint8_t channel);
+float ADS1115_Read(uint8_t channel);
 
 #endif /* ADS1115_H_ */
