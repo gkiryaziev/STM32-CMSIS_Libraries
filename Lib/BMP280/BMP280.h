@@ -177,6 +177,7 @@ typedef enum {
 uint8_t BMP280_ReadRegister(uint8_t address);
 void BMP280_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size);
 void BMP280_WriteRegister(uint8_t address, uint8_t data);
+void BMP280_WriteRegisters(uint8_t address, uint8_t *data, uint8_t size);
 uint8_t BMP280_GetStatus();
 void BMP280_Init(BMP280_Mode_Type mode);
 void BMP280_Reset();

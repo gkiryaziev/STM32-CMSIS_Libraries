@@ -21,26 +21,6 @@ int16_t BMP280_dig_P8;
 int16_t BMP280_dig_P9;
 int32_t BMP280_t_fine;
 
-uint8_t BMP280_GetStatus() {
-
-	// I2C Send
-	I2C1_Start();
-	if (I2C1_SendAddress(BMP280_ADDRESS, I2C_TRANSMITTER) == I2C_ERROR) return 0;
-	I2C1_SendData(BMP280_REGISTER_ID);
-
-	// I2C Receive
-	I2C1_Start();
-	if (I2C1_SendAddress(BMP280_ADDRESS, I2C_RECEIVER) == I2C_ERROR) return 0;
-	I2C1_Stop();
-	uint8_t id = I2C1_ReceiveData(I2C_NACK);
-
-	if(id != 0x58) {
-		return 0;
-	}
-
-	return 1;
-}
-
 uint8_t BMP280_ReadRegister(uint8_t address) {
 
 	uint8_t data[1] = {0};
@@ -70,14 +50,46 @@ void BMP280_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size) {
 	I2C1_Stop();
 	data[count] = I2C1_ReceiveData(I2C_NACK);
 }
+
 void BMP280_WriteRegister(uint8_t address, uint8_t data) {
+
+	uint8_t tempdata[1] = { data };
+
+	BMP280_WriteRegisters(address, tempdata, 1);
+}
+
+void BMP280_WriteRegisters(uint8_t address, uint8_t *data, uint8_t size) {
 
 	// I2C Send
 	I2C1_Start();
 	I2C1_SendAddress(BMP280_ADDRESS, I2C_TRANSMITTER);
 	I2C1_SendData(address);
-	I2C1_SendData(data);
+
+	for (int8_t i = 0; i < size; ++i) {
+		I2C1_SendData(data[i]);
+	}
+
 	I2C1_Stop();
+}
+
+uint8_t BMP280_GetStatus() {
+
+	// I2C Send
+	I2C1_Start();
+	if (I2C1_SendAddress(BMP280_ADDRESS, I2C_TRANSMITTER) == I2C_ERROR) return 0;
+	I2C1_SendData(BMP280_REGISTER_ID);
+
+	// I2C Receive
+	I2C1_Start();
+	if (I2C1_SendAddress(BMP280_ADDRESS, I2C_RECEIVER) == I2C_ERROR) return 0;
+	I2C1_Stop();
+	uint8_t id = I2C1_ReceiveData(I2C_NACK);
+
+	if(id != 0x58) {
+		return 0;
+	}
+
+	return 1;
 }
 
 void BMP280_Init(BMP280_Mode_Type mode) {
