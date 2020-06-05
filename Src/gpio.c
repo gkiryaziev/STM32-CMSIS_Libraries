@@ -1,29 +1,40 @@
 #include "gpio.h"
 
+// -----------------------------------------
+// GPIO Init
+// -----------------------------------------
 void GPIO_Init() {
 
 	GPIO_Disable_JTAG();									// Remap PA15, PB3, PB4 as GPIO
 
-	// PC13
+	// Blue Pill Led, PC13
 	GPIO_Enable(GPIOC);
-	GPIO_SetMode_Output_2MHz_PP(GPIOC, 13);
+	GPIO_SetMode_Output_50MHz_PP(GPIOC, 13);
 	GPIO_PC13_Off();
 }
 
+// -----------------------------------------
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
 void GPIO_SetPin(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	GPIOx->BSRR |= (1 << pin);								// 1: Set the corresponding ODRx bit
 }
 
+// -----------------------------------------
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
 void GPIO_ResetPin(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	GPIOx->BRR |= (1 << pin);								// 1: Reset the corresponding ODRx bit
 }
 
 // -----------------------------------
-// GPIOx GPIOA, GPIOB, GPIOC
-// pin   0 - 15
-// state 0, 1
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// state: 0, 1
 // -----------------------------------
 void GPIO_WritePin(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t state) {
 
@@ -34,11 +45,18 @@ void GPIO_WritePin(GPIO_TypeDef *GPIOx, uint8_t pin, uint8_t state) {
 	}
 }
 
+// -----------------------------------------
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
 uint16_t GPIO_ReadPin(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	return (GPIOx->IDR & (1 << pin));
 }
 
+// -----------------------------------------
+// GPIOx: GPIOA, GPIOB, GPIOC
+// -----------------------------------------
 void GPIO_Enable(GPIO_TypeDef *GPIOx) {
 
 	if (GPIOx == GPIOA) RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;	// 1: IO port A clock enabled
@@ -46,6 +64,9 @@ void GPIO_Enable(GPIO_TypeDef *GPIOx) {
 	if (GPIOx == GPIOC) RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;	// 1: IO port C clock enabled
 }
 
+// -----------------------------------------
+// JTAG-DP Disabled and SW-DP Enabled
+// -----------------------------------------
 void GPIO_Disable_JTAG(void) {
 
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;						// 1: Alternate Function I/O clock enabled
@@ -54,6 +75,8 @@ void GPIO_Disable_JTAG(void) {
 
 // -----------------------------------------
 // General purpose output push-pull, 2MHz
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
 // -----------------------------------------
 void GPIO_SetMode_Output_2MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
@@ -69,7 +92,25 @@ void GPIO_SetMode_Output_2MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 }
 
 // -----------------------------------------
+// General purpose output push-pull, 10MHz
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
+void GPIO_SetMode_Output_10MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
+
+	if (pin <= 7) {											// CRL
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x1 << (pin * 4));					// 0001: max speed 10 MHz, General purpose output push-pull
+	} else {												// CRH
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x1 << ((pin - 8) * 4));				// 0001: max speed 10 MHz, General purpose output push-pull
+	}
+}
+
+// -----------------------------------------
 // General purpose output push-pull, 50MHz
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
 // -----------------------------------------
 void GPIO_SetMode_Output_50MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
@@ -84,6 +125,8 @@ void GPIO_SetMode_Output_50MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 // -----------------------------------------
 // Floating input (reset state)
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
 // -----------------------------------------
 void GPIO_SetMode_Input_Floating(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
@@ -98,11 +141,17 @@ void GPIO_SetMode_Input_Floating(GPIO_TypeDef *GPIOx, uint8_t pin) {
 	}
 }
 
+// -----------------------------------------
+// Blue Pill Led, PC13, Inverted, 0 is On
+// -----------------------------------------
 void GPIO_PC13_On() {
 
 	GPIO_WritePin(GPIOC, 13, 0);
 }
 
+// -----------------------------------------
+// Blue Pill Led, PC13, Inverted, 1 is Off
+// -----------------------------------------
 void GPIO_PC13_Off() {
 
 	GPIO_WritePin(GPIOC, 13, 1);

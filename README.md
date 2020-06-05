@@ -1,6 +1,6 @@
 ## STM32 (STM32F103C8T6) CMSIS Libraries
 
-IDE - Atollic TrueSTUDIO for STM32 9.3.0
+IDE - STM32CubeIDE 1.3.0
 
 #### System (Inc/Src)
 - **RCC**
@@ -26,5 +26,21 @@ IDE - Atollic TrueSTUDIO for STM32 9.3.0
 - **LED_DISPLAY** (74HC595)
 - **HCSR04**
 - **DHT11**
+
+#### Information
+```c
+// non blocking delay example
+Delay_TypeDef d1, d2;
+
+if (DWT_nb_timeout(&d1)) {
+	GPIO_WritePin(GPIOB, 12 , state1); state1 = !state1;
+	DWT_nb_delay_ms(&d1, 300);
+}
+
+if (DWT_nb_timeout(&d2)) {
+	GPIO_WritePin(GPIOB, 14 , state2); state2 = !state2;
+	DWT_nb_delay_ms(&d2, 700);
+}
+```
 
 *All libraries are under development and are provided as is.*

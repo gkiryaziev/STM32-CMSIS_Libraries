@@ -1,7 +1,7 @@
 /*
- * rcc.h
+ * main.h
  *
- *  Created on: 13.11.2018
+ *  Created on: 03.06.2020
  *      Author: Admin
  */
 
@@ -15,15 +15,12 @@ extern "C" {
 #include "stm32f1xx.h"
 #include "stdio.h"
 
+#include "delay.h"
 #include "gpio.h"
 #include "rcc.h"
-#include "delay.h"
-#include "usart.h"
-#include "i2c.h"
-#include "spi.h"
-
-#include "lcd1602_char.h"
-#include "lcd1602_i2c.h"
+//#include "usart.h"
+//#include "i2c.h"
+//#include "spi.h"
 
 #ifdef __cplusplus
 }
