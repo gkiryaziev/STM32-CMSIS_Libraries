@@ -1,12 +1,20 @@
 /*
  * USART1
- * APB CLOCK - 72MHz
- * BAUD RATE - 115200
- * TX        - PA9
- * RX        - PA10
+ * APB CLOCK: 72MHz
+ * BAUD RATE: 115200
+ * TX       : PA9
+ * RX       : PA10
  */
+
 #include "usart.h"
 
+__IO char usart1_buffer[USART1_BUFFER_SIZE] = {0};
+__IO uint8_t usart1_buffer_index = 0;
+__IO uint8_t usart1_buffer_ready = 0;
+
+// -----------------------------------------------
+// USART1 Init
+// -----------------------------------------------
 void USART1_Init() {
 
 	RCC->APB2ENR |= RCC_APB2ENR_USART1EN;		// 1: USART1 clock enabled
@@ -26,18 +34,26 @@ void USART1_Init() {
 	USART1->BRR = APB2_CLK / USART1_BAUD_RATE;	// USARTx_BRR = APB2CLK / USART1_BAUD_RATE
 	USART1->CR1 |= USART_CR1_UE; 				// USART enable
 	USART1->CR1 |= USART_CR1_TE;				// Transmitter enable
-//	USART1->CR1 |= USART_CR1_RE;				// Receiver enable
+	USART1->CR1 |= USART_CR1_RE;				// Receiver enable
 
-//	USART1->CR1 |= USART_CR1_RXNEIE;			// RXNE interrupt enable
-//	NVIC_EnableIRQ(USART1_IRQn);				// USART1 global Interrupt
+	USART1->CR1 |= USART_CR1_RXNEIE;			// RXNE interrupt enable
+	NVIC_EnableIRQ(USART1_IRQn);				// USART1 global Interrupt
 }
 
-void USART1_SendChar(char chr) {
+// -----------------------------------------------
+// USART1 Send Char
+// -----------------------------------------------
+void USART1_SendChar(char ch) {
 
-	while (!(USART1->SR & USART_SR_TC));		// Transmission complete
-	USART1->DR = chr;
+	while (!(USART1->SR & USART_SR_TXE));		// 0: Data is not transferred to the shift register
+	USART1->SR &= ~USART_SR_TC;					// USART_SR_TC clear. This clearing sequence is recommended only for multibuffer communication.
+	
+	USART1->DR = ch;
 }
 
+// -----------------------------------------------
+// USART1 Send String
+// -----------------------------------------------
 void USART1_SendString(char *str) {
 
 	while (*str) {
@@ -45,11 +61,46 @@ void USART1_SendString(char *str) {
 	}
 }
 
-//void USART1_IRQHandler() {
+// -----------------------------------------------
+// USART1 Read String
+// -----------------------------------------------
+uint8_t USART1_ReadString(char *str) {
 
-//	if (USART1->SR & USART_SR_RXNE) {			// Read data register not empty
-//		USART1->SR &= ~USART_SR_RXNE;			// USART_SR_RXNE reset
-//
-//		//USART1_SendString((char*)USART1->DR);
-//	}
-//}
+	uint8_t new_data = 0;
+
+	if (usart1_buffer_ready) {
+
+		for (uint8_t i = 0; i < USART1_BUFFER_SIZE; ++i) {
+			str[i] = usart1_buffer[i];			// Copy volatile buffer to external buffer
+		}
+
+		usart1_buffer_ready = 0;				// Read usart buffer only once
+		new_data = 1;							// Flag to check if data is new
+	}
+
+	return new_data;
+}
+
+// -----------------------------------------------
+// USART1 IRQHandler
+// -----------------------------------------------
+void USART1_IRQHandler() {
+
+	if (USART1->SR & USART_SR_RXNE) {			// 1: Received data is ready to be read
+		USART1->SR &= ~USART_SR_RXNE;			// USART_SR_RXNE clear. This clearing sequence is recommended only for multibuffer communication.
+
+		char rx = (char)USART1->DR;
+
+		if ((rx == '\r') || (rx == '\n')) {
+			usart1_buffer[usart1_buffer_index] = 0;			// Add terminating NULL
+			usart1_buffer_index = 0;
+			usart1_buffer_ready = 1;
+		} else {
+			if (usart1_buffer_index == USART1_BUFFER_SIZE)	// If overflows, reset index
+				usart1_buffer_index = 0;
+
+			usart1_buffer_ready = 0;						// New data, reset ready flag
+			usart1_buffer[usart1_buffer_index++] = rx;
+		}
+	}
+}
