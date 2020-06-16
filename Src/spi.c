@@ -1,13 +1,9 @@
 /*
- * spi.c
- *
- *  Created on: 9.05.2019
- *      Author: Admin
- *
- *  NSS      - PA4 (General purpose output push-pull)
- *  SCK      - PA5 (Alternate function push-pull)
- *  MISO     - PA6 (Input floating / Input pull-up)
- *  MOSI     - PA7 (Alternate function push-pull)
+ * SPI1
+ * NSS : PA4 (General purpose output push-pull)
+ * SCK : PA5 (Alternate function push-pull)
+ * MISO: PA6 (Input floating / Input pull-up)
+ * MOSI: PA7 (Alternate function push-pull)
  */
 #include "spi.h"
 

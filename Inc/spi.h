@@ -1,8 +1,8 @@
 /*
  * spi.h
  *
- *  Created on: 9.05.2019
- *      Author: Admin
+ * Created on: 9.05.2019
+ *     Author: Admin
  */
 
 #ifndef SPI_H_

@@ -1,18 +1,16 @@
 /*
- * i2c.c
+ * I2C1
+ * SCL: PB6
+ * SDA: PB7
  *
- *  Created on: 27.04.2019
- *      Author: Admin
- *
- *  SCL1	- PB6
- *  SDA1	- PB7
- *  SCL2	- PB10
- *  SDA2	- PB11
+ * I2C2
+ * SCL: PB10
+ * SDA: PB11
  */
 
 #include "i2c.h"
 
-#define PCLK1_FREQUENCY		(uint32_t)(SystemCoreClock / 2)		// PCLK1 frequency
+#define PCLK1_FREQUENCY	(uint32_t)(SystemCoreClock / 2)	// PCLK1 frequency
 
 void I2C1_Init(I2C_Mode_Type mode) {
 
@@ -62,7 +60,6 @@ void I2C1_Stop() {
 	I2C1->CR1 |= I2C_CR1_STOP;						// 1: Stop generation after the current byte transfer or after the current Start condition is sent.
 
 	while((I2C1->SR1 & I2C_SR1_STOPF));				// 1: Stop condition detected
-
 }
 
 I2C_Status_Type I2C1_SendAddress(uint8_t address, I2C_Direction_Type direction) {

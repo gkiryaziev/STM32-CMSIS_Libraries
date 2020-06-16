@@ -1,8 +1,8 @@
 /*
  * rcc.h
  *
- *  Created on: 13.11.2018
- *      Author: Admin
+ * Created on: 13.11.2018
+ *     Author: Admin
  */
 
 #ifndef RCC_H_

@@ -1,9 +1,9 @@
 /*
  * delay.h
  *
- *  Updated on: 03.06.2020
- *  Created on: 16.11.2018
- *      Author: Admin
+ * Updated on: 03.06.2020
+ * Created on: 16.11.2018
+ *     Author: Admin
  */
 
 #ifndef DELAY_H_

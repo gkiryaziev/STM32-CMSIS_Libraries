@@ -1,9 +1,9 @@
 /*
  * gpio.h
  *
- *  Updated on: 03.06.2020
- *  Created on: 13.11.2018
- *      Author: Admin
+ * Updated on: 03.06.2020
+ * Created on: 13.11.2018
+ *     Author: Admin
  */
 
 #ifndef GPIO_H_
