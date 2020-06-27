@@ -81,13 +81,11 @@ void GPIO_Disable_JTAG(void) {
 void GPIO_SetMode_Output_2MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	if (pin <= 7) {											// CRL
-		GPIOx->CRL &= ~(3 << (pin * 4));					// MODE reset
-		GPIOx->CRL |= (2 << (pin * 4));						// 10: Output mode, max speed 2 MHz.
-		GPIOx->CRL &= ~(3 << ((pin * 4) + 2));				// 00: General purpose output push-pull
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x2 << (pin * 4));					// 0010: General purpose output push-pull, max speed 2 MHz
 	} else {												// CRH
-		GPIOx->CRH &= ~(3 << ((pin - 8) * 4));				// MODE reset
-		GPIOx->CRH |= (2 << ((pin - 8) * 4));				// 10: Output mode, max speed 2 MHz.
-		GPIOx->CRH &= ~(3 << (((pin - 8) * 4) + 2));		// 00: General purpose output push-pull
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x2 << ((pin - 8) * 4));				// 0010: General purpose output push-pull, max speed 2 MHz
 	}
 }
 
@@ -100,10 +98,10 @@ void GPIO_SetMode_Output_10MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	if (pin <= 7) {											// CRL
 		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
-		GPIOx->CRL |= (0x1 << (pin * 4));					// 0001: max speed 10 MHz, General purpose output push-pull
+		GPIOx->CRL |= (0x1 << (pin * 4));					// 0001: General purpose output push-pull, max speed 10 MHz
 	} else {												// CRH
 		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
-		GPIOx->CRH |= (0x1 << ((pin - 8) * 4));				// 0001: max speed 10 MHz, General purpose output push-pull
+		GPIOx->CRH |= (0x1 << ((pin - 8) * 4));				// 0001: General purpose output push-pull, max speed 10 MHz
 	}
 }
 
@@ -115,11 +113,11 @@ void GPIO_SetMode_Output_10MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 void GPIO_SetMode_Output_50MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	if (pin <= 7) { 										// CRL
-		GPIOx->CRL |= (3 << (pin * 4));						// 11: Output mode, max speed 50 MHz
-		GPIOx->CRL &= ~(3 << ((pin * 4) + 2));				// 00: General purpose output push-pull
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x3 << (pin * 4));					// 0011: General purpose output push-pull, max speed 50 MHz
 	} else {												// CRH
-		GPIOx->CRH |= (3 << ((pin - 8) * 4));				// 11: Output mode, max speed 50 MHz
-		GPIOx->CRH &= ~(3 << (((pin - 8) * 4) + 2));		// 00: General purpose output push-pull
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x3 << ((pin - 8) * 4));				// 0011: General purpose output push-pull, max speed 50 MHz
 	}
 }
 
@@ -131,13 +129,11 @@ void GPIO_SetMode_Output_50MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin) {
 void GPIO_SetMode_Input_Floating(GPIO_TypeDef *GPIOx, uint8_t pin) {
 
 	if (pin <= 7) { 										// CRL
-		GPIOx->CRL &= ~(3 << (pin * 4));					// 00: Input mode (reset state)
-		GPIOx->CRL &= ~(3 << ((pin * 4) + 2));				// CNF reset
-		GPIOx->CRL |= (1 << ((pin * 4) + 2)); 				// 01: Floating input (reset state)
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x4 << (pin * 4));					// 0100: Input mode, floating (reset state)
 	} else {												// CRH
-		GPIOx->CRH &= ~(3 << ((pin - 8) * 4));				// 00: Input mode (reset state)
-		GPIOx->CRH &= ~(3 << (((pin - 8) * 4) + 2));		// CNF reset
-		GPIOx->CRH |= (1 << (((pin - 8) * 4) + 2));			// 01: Floating input (reset state)
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x4 << ((pin - 8) * 4));				// 0100: Input mode, floating (reset state)
 	}
 }
 

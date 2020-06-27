@@ -30,7 +30,9 @@ IDE - STM32CubeIDE 1.3.0
 #### Information
 ```c
 // non blocking delay example
-Delay_TypeDef d1, d2;
+Delay_TypeDef d1, d2, usart1_d1;
+
+char buffer[USART1_BUFFER_SIZE] = {0};
 
 if (DWT_nb_timeout(&d1)) {
 	GPIO_WritePin(GPIOB, 12 , state1); state1 = !state1;
@@ -40,6 +42,13 @@ if (DWT_nb_timeout(&d1)) {
 if (DWT_nb_timeout(&d2)) {
 	GPIO_WritePin(GPIOB, 14 , state2); state2 = !state2;
 	DWT_nb_delay_ms(&d2, 700);
+}
+
+// non blocking delay, USART1
+if (DWT_nb_timeout(&usart1_d1)) {
+	if (USART1_ReadString(buffer))
+		USART1_SendString(buffer);
+	DWT_nb_delay_ms(&usart1_d1, 50);
 }
 ```
 
