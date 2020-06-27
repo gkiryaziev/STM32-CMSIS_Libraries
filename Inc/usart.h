@@ -15,7 +15,7 @@ extern "C" {
 
 #include "stm32f1xx.h"
 
-#define USART1_BUFFER_SIZE ((uint8_t)25)
+#define USART1_BUFFER_SIZE ((uint8_t)25)		// Real size is USART1_BUFFER_SIZE - 1, last element is for terminating null
 #define APB2_CLK           ((uint32_t)72000000)
 #define USART1_BAUD_RATE   ((uint32_t)115200)
 

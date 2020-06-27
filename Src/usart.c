@@ -9,8 +9,8 @@
 #include "usart.h"
 
 __IO char usart1_buffer[USART1_BUFFER_SIZE] = {0};
-__IO uint8_t usart1_buffer_index = 0;
-__IO uint8_t usart1_buffer_ready = 0;
+__IO uint8_t usart1_index = 0;
+__IO uint8_t usart1_ready = 0;
 
 // -----------------------------------------------
 // USART1 Init
@@ -66,19 +66,23 @@ void USART1_SendString(char *str) {
 // -----------------------------------------------
 uint8_t USART1_ReadString(char *str) {
 
-	uint8_t new_data = 0;
+	uint8_t is_new = 0;						// Flag to check if data is new
 
-	if (usart1_buffer_ready) {
+	if (usart1_ready) {
 
-		for (uint8_t i = 0; i < USART1_BUFFER_SIZE; ++i) {
-			str[i] = usart1_buffer[i];			// Copy volatile buffer to external buffer
+		uint8_t i = 0;
+		
+		while (usart1_buffer[i] != 0) {
+			str[i] = usart1_buffer[i];		// Copy volatile buffer to external buffer
+			i++;
 		}
-
-		usart1_buffer_ready = 0;				// Read usart buffer only once
-		new_data = 1;							// Flag to check if data is new
+		
+		str[i] = 0;							// Add terminating NULL to external buffer
+		usart1_ready = 0;					// Read usart buffer only once
+		is_new = 1;
 	}
 
-	return new_data;
+	return is_new;
 }
 
 // -----------------------------------------------
@@ -86,21 +90,21 @@ uint8_t USART1_ReadString(char *str) {
 // -----------------------------------------------
 void USART1_IRQHandler() {
 
-	if (USART1->SR & USART_SR_RXNE) {			// 1: Received data is ready to be read
-		USART1->SR &= ~USART_SR_RXNE;			// USART_SR_RXNE clear. This clearing sequence is recommended only for multibuffer communication.
+	if (USART1->SR & USART_SR_RXNE) {		// 1: Received data is ready to be read
+		USART1->SR &= ~USART_SR_RXNE;		// USART_SR_RXNE clear. This clearing sequence is recommended only for multibuffer communication.
 
 		char rx = (char)USART1->DR;
 
 		if ((rx == '\r') || (rx == '\n')) {
-			usart1_buffer[usart1_buffer_index] = 0;			// Add terminating NULL
-			usart1_buffer_index = 0;
-			usart1_buffer_ready = 1;
+			usart1_buffer[usart1_index] = 0;			// Add terminating NULL
+			usart1_index = 0;
+			usart1_ready = 1;
 		} else {
-			if (usart1_buffer_index == USART1_BUFFER_SIZE)	// If overflows, reset index
-				usart1_buffer_index = 0;
+			if (usart1_index == USART1_BUFFER_SIZE - 1)	// If overflows, reset index
+				usart1_index = 0;
 
-			usart1_buffer_ready = 0;						// New data, reset ready flag
-			usart1_buffer[usart1_buffer_index++] = rx;
+			usart1_ready = 0;							// New data, reset ready flag
+			usart1_buffer[usart1_index++] = rx;
 		}
 	}
 }
