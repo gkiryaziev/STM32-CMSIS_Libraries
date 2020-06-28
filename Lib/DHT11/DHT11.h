@@ -1,9 +1,11 @@
 /*
  * DHT11.h
  *
- *  Created on: 24 мар. 2019 г.
- *      Author: Admin
+ * Updated on: 28.06.2020
+ * Created on: 24.03.2019
+ *     Author: Admin
  */
+
 #ifndef DHT11_H_
 #define DHT11_H_
 

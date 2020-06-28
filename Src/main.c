@@ -4,8 +4,12 @@
 #define LED2 14
 
 uint8_t state1, state2 = 0;
-Delay_TypeDef d1, d2, usart1_d1;
+Delay_TypeDef d1, d2, usart1_d1, dht11_d1;
 char buffer[USART1_BUFFER_SIZE] = {0};		// Set buffer size in usart.h file
+
+char tx_buffer[100] = {0};
+
+DHT11_TypeDef dht11;
 
 
 int main(void)
@@ -39,6 +43,15 @@ int main(void)
 			if (USART1_ReadString(buffer))
 				USART1_SendString(buffer);	// If new data received, send data back
 			DWT_nb_delay_ms(&usart1_d1, 50);
+		}
+
+		// non blocking delay, DHT11
+		if (DWT_nb_timeout(&dht11_d1)) {
+			if (DHT_read(&dht11)) {
+				sprintf(tx_buffer, "T: %d, H: %d\n", dht11.temperature, dht11.humidity);
+				USART1_SendString(tx_buffer);
+			}
+			DWT_nb_delay_ms(&dht11_d1, 2000);
 		}
 	}
 }

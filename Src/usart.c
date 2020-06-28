@@ -103,8 +103,8 @@ void USART1_IRQHandler() {
 			if (usart1_index == USART1_BUFFER_SIZE - 1)	// If overflows, reset index
 				usart1_index = 0;
 
-			usart1_ready = 0;							// New data, reset ready flag
 			usart1_buffer[usart1_index++] = rx;
+			usart1_ready = 0;							// New data, reset ready flag
 		}
 	}
 }

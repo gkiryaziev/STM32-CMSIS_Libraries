@@ -22,6 +22,8 @@ extern "C" {
 //#include "i2c.h"
 //#include "spi.h"
 
+#include "DHT11/DHT11.h"
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

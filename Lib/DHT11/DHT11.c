@@ -1,11 +1,7 @@
 /*
- * DHT11.c
- *
- *  Created on: 24.03.2019
- *      Author: Admin
- *
  * DHT11	- PB1
  */
+
 #include "DHT11.h"
 
 // -----------------------------------------------
@@ -36,36 +32,47 @@ void DHT_set_gpio_input() {
 uint8_t DHT_start() {
 	// start
 	DHT_set_gpio_output();
-	GPIOB->ODR &= ~GPIO_ODR_ODR1;			// ODRy: Port output data (y= 0 .. 15)
+	
+	GPIOB->BRR |= GPIO_BRR_BR1;				// 1: Reset the corresponding ODRx bit
+
 	DWT_delay_ms(18);
-	DHT_set_gpio_input();
+
+	GPIOB->BSRR |= GPIO_BSRR_BS1;			// 1: Set the corresponding ODRx bit
+	
+	DWT_delay_us(40);
 
 	// check response
-	DWT_delay_us(40);
-	if ((GPIOB->IDR & GPIO_IDR_IDR1) == 0) {// IDRy: Port input data (y= 0 .. 15)
-		DWT_delay_us(80);
-		if ((GPIOB->IDR & GPIO_IDR_IDR1) != 0) {
-			while ((GPIOB->IDR & GPIO_IDR_IDR1) != 0);
-			return 1;
-		}
-	}
-	return 0;
+	DHT_set_gpio_input();
+
+	if (GPIOB->IDR & GPIO_IDR_IDR1)
+		return 0;
+
+	DWT_delay_us(80);
+
+	if (!(GPIOB->IDR & GPIO_IDR_IDR1))
+		return 0;
+
+	while (GPIOB->IDR & GPIO_IDR_IDR1);
+
+	return 1;
 }
 
 uint8_t DHT_read_byte() {
-	uint8_t i = 0, j;
+
+	uint8_t data = 0, j;
 
 	for (j = 0; j < 8; ++j) {
-		while ((GPIOB->IDR & GPIO_IDR_IDR1) == 0);
+
+		while (!(GPIOB->IDR & GPIO_IDR_IDR1));
+
 		DWT_delay_us(40);
-		if ((GPIOB->IDR & GPIO_IDR_IDR1) == 0) {
-			i &= ~(1 << (7 - j));
-		} else {
-			i |= (1 << (7 - j));
+
+		if (GPIOB->IDR & GPIO_IDR_IDR1){
+			data |= (1 << (7 - j));
+			while(GPIOB->IDR & GPIO_IDR_IDR1);
 		}
-		while((GPIOB->IDR & GPIO_IDR_IDR1) != 0);
 	}
-	return i;
+	return data;
 }
 
 uint8_t DHT_read(DHT11_TypeDef *dht11) {
@@ -82,9 +89,8 @@ uint8_t DHT_read(DHT11_TypeDef *dht11) {
 			dht11->humidity = rh_b1;
 			dht11->temperature = temp_b1;
 			return 1;
-		} else {
-			return 0;
 		}
 	}
+
 	return 0;
 }
