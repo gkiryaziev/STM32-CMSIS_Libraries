@@ -11,7 +11,7 @@ char dht_tx_buffer[100] = {0};
 DHT11_TypeDef dht11;
 
 
-int main(void)
+int main()
 {
 	RCC_Init();
 	DWT_Init();
@@ -46,11 +46,13 @@ int main(void)
 
 		// non blocking delay, DHT11
 		if (DWT_nb_timeout(&dht11_d1)) {
-			if (DHT_read(&dht11)) {
+			if (DHT11_read(&dht11)) {
 				sprintf(dht_tx_buffer, "T: %d, H: %d\n", dht11.temperature, dht11.humidity);
 				USART1_SendString(dht_tx_buffer);
 			}
 			DWT_nb_delay_ms(&dht11_d1, 2000);
 		}
 	}
+
+	return 0;
 }

@@ -1,6 +1,6 @@
 ## STM32 (STM32F103C8T6) CMSIS Libraries
 
-IDE - STM32CubeIDE 1.3.0
+IDE - STM32CubeIDE 1.4.0
 
 #### System (Inc/Src)
 - **RCC**

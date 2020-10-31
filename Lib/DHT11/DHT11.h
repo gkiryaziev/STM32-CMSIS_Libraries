@@ -18,9 +18,9 @@ extern "C" {
 #include "delay.h"
 #include "gpio.h"
 
-// define DHT PORT and PIN
-#define DHT_PORT GPIOB
-#define DHT_PIN  1
+// define DHT11 PORT and PIN
+#define DHT11_PORT GPIOB
+#define DHT11_PIN  1
 
 // -----------------------------------------------
 // public struct
@@ -34,7 +34,7 @@ typedef struct {
 // -----------------------------------------------
 // public functions
 // -----------------------------------------------
-uint8_t DHT_read(DHT11_TypeDef *dht11);
+uint8_t DHT11_read(DHT11_TypeDef *dht11);
 // -----------------------------------------------
 
 #ifdef __cplusplus
