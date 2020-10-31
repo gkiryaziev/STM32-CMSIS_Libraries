@@ -3,3 +3,4 @@ Debug/
 .cproject
 .project
 *.launch
+*.cfg

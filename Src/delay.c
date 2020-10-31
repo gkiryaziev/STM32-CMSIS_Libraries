@@ -1,15 +1,15 @@
 #include "delay.h"
 
 #define MS_COEFF (SystemCoreClock / 1000)
-#define US_COEFF (SystemCoreClock / 1000001)
-
-#ifdef SYSTICK_DELAY_ENABLE
-
-__IO uint32_t systick_counter = 0;
+#define US_COEFF (SystemCoreClock / 1000000)
 
 // -----------------------------------------------
 // SysTick Delay (only ms)
 // -----------------------------------------------
+#ifdef SYSTICK_DELAY_ENABLE
+
+__IO uint32_t systick_counter = 0;
+
 void SysTick_Init() {
 	SystemCoreClockUpdate();							// Update SystemCoreClock variable
 	SysTick_Config(MS_COEFF);							// 1ms

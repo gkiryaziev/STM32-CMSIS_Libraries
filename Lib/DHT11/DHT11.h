@@ -1,6 +1,7 @@
 /*
  * DHT11.h
  *
+ * Updated on: 31.10.2020
  * Updated on: 28.06.2020
  * Created on: 24.03.2019
  *     Author: Admin
@@ -15,6 +16,11 @@ extern "C" {
 
 #include "stm32f1xx.h"
 #include "delay.h"
+#include "gpio.h"
+
+// define DHT PORT and PIN
+#define DHT_PORT GPIOB
+#define DHT_PIN  1
 
 // -----------------------------------------------
 // public struct
