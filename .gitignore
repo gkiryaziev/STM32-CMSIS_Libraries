@@ -1,5 +1,6 @@
 .settings/
 Debug/
+Release/
 .cproject
 .project
 *.launch

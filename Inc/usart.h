@@ -1,6 +1,7 @@
 /*
  * usart.h
  *
+ * Updated on: 15.05.2021
  * Updated on: 15.06.2020
  * Created on: 13.11.2018
  *     Author: Admin
@@ -23,6 +24,7 @@ void USART1_Init();
 void USART1_SendChar(char chr);
 void USART1_SendString(char *str);
 uint8_t USART1_ReadString(char *str);
+char *USART1_ReadStringExp();
 
 #ifdef __cplusplus
 }

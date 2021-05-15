@@ -8,9 +8,9 @@
 
 #include "usart.h"
 
-__IO char usart1_buffer[USART1_BUFFER_SIZE] = {0};
-__IO uint8_t usart1_index = 0;
-__IO uint8_t usart1_ready = 0;
+volatile char usart1_buffer[USART1_BUFFER_SIZE] = {0};
+volatile uint8_t usart1_index = 0;
+volatile uint8_t usart1_ready = 0;
 
 // -----------------------------------------------
 // USART1 Init
@@ -62,27 +62,42 @@ void USART1_SendString(char *str) {
 }
 
 // -----------------------------------------------
-// USART1 Read String
+// USART1 Read String, copy buffer
 // -----------------------------------------------
 uint8_t USART1_ReadString(char *str) {
-
-	uint8_t is_new = 0;						// Flag to check if data is new
 
 	if (usart1_ready) {
 
 		uint8_t i = 0;
-		
+
 		while (usart1_buffer[i] != 0) {
 			str[i] = usart1_buffer[i];		// Copy volatile buffer to external buffer
 			i++;
 		}
-		
+
 		str[i] = 0;							// Add terminating NULL to external buffer
 		usart1_ready = 0;					// Read usart buffer only once
-		is_new = 1;
+
+		return 1;
 	}
 
-	return is_new;
+	return 0;
+}
+
+// -----------------------------------------------
+// USART1 Read String, return buffer
+// Experimental because of warning:
+// warning: return discards 'volatile' qualifier from pointer target type
+// -----------------------------------------------
+char *USART1_ReadStringExp() {
+
+	if (usart1_ready) {
+		usart1_ready = 0;					// Read usart buffer only once
+
+		return usart1_buffer;
+	}
+
+	return 0;
 }
 
 // -----------------------------------------------
