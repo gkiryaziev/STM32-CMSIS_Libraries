@@ -14,6 +14,8 @@ extern "C" {
 
 #include "stm32f1xx.h"
 #include "stdio.h"
+//#include <stdlib.h>
+//#include <string.h>
 
 #include "delay.h"
 #include "gpio.h"
