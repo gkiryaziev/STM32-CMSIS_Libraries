@@ -1,6 +1,6 @@
 ## STM32 (STM32F103C8T6) CMSIS Libraries
 
-IDE - STM32CubeIDE 1.4.0
+IDE - STM32CubeIDE 1.7.0
 
 #### System (Inc/Src)
 - **RCC**
@@ -26,6 +26,7 @@ IDE - STM32CubeIDE 1.4.0
 - **LED_DISPLAY** (74HC595)
 - **HCSR04**
 - **DHT11**
+- **Rotary Encoder (polling/debounce)**
 
 #### Information
 ```c

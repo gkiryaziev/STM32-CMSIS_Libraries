@@ -26,6 +26,8 @@ void GPIO_SetMode_Output_2MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin);
 void GPIO_SetMode_Output_10MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin);
 void GPIO_SetMode_Output_50MHz_PP(GPIO_TypeDef *GPIOx, uint8_t pin);
 void GPIO_SetMode_Input_Floating(GPIO_TypeDef *GPIOx, uint8_t pin);
+void GPIO_SetMode_Input_PullDown(GPIO_TypeDef *GPIOx, uint8_t pin);
+void GPIO_SetMode_Input_PullUp(GPIO_TypeDef *GPIOx, uint8_t pin);
 
 // Blue Pill Led, PC13
 void GPIO_PC13_On();

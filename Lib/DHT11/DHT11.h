@@ -20,7 +20,7 @@ extern "C" {
 
 // define DHT11 PORT and PIN
 #define DHT11_PORT GPIOB
-#define DHT11_PIN  1
+#define DHT11_PIN  5
 
 // -----------------------------------------------
 // public struct

@@ -138,6 +138,42 @@ void GPIO_SetMode_Input_Floating(GPIO_TypeDef *GPIOx, uint8_t pin) {
 }
 
 // -----------------------------------------
+// Input pull-down
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
+void GPIO_SetMode_Input_PullDown(GPIO_TypeDef *GPIOx, uint8_t pin) {
+
+	if (pin <= 7) { 										// CRL
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x8 << (pin * 4));					// 1000: Input with pull-up / pull-down
+	} else {												// CRH
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x8 << ((pin - 8) * 4));				// 1000: Input with pull-up / pull-down
+	}
+
+	GPIOx->ODR &= ~(0x1 << pin);							// Port output data (y= 0 .. 15)
+}
+
+// -----------------------------------------
+// Input pull-up
+// GPIOx: GPIOA, GPIOB, GPIOC
+// pin  : 0 - 15
+// -----------------------------------------
+void GPIO_SetMode_Input_PullUp(GPIO_TypeDef *GPIOx, uint8_t pin) {
+
+	if (pin <= 7) { 										// CRL
+		GPIOx->CRL &= ~(0xF << (pin * 4));					// 0000: [CNF, MODE] reset
+		GPIOx->CRL |= (0x8 << (pin * 4));					// 1000: Input with pull-up / pull-down
+	} else {												// CRH
+		GPIOx->CRH &= ~(0xF << ((pin - 8) * 4));			// 0000: [CNF, MODE] reset
+		GPIOx->CRH |= (0x8 << ((pin - 8) * 4));				// 1000: Input with pull-up / pull-down
+	}
+
+	GPIOx->ODR |= (0x1 << pin);								// Port output data (y= 0 .. 15)
+}
+
+// -----------------------------------------
 // Blue Pill Led, PC13, Inverted, 0 is On
 // -----------------------------------------
 void GPIO_PC13_On() {

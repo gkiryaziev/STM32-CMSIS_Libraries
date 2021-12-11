@@ -25,6 +25,7 @@ extern "C" {
 //#include "spi.h"
 
 #include "DHT11/DHT11.h"
+#include "RotaryEncoder/RotaryEncoder.h"
 
 #ifdef __cplusplus
 }
