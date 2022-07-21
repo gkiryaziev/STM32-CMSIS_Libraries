@@ -17,6 +17,10 @@ __IO uint16_t distance = 0;
 __IO uint8_t echo_flag = 0;
 __IO uint8_t tim2_it_count = 0;
 // -----------------------------------------------
+
+// ------------------------------------------------------------
+// Variant 1 (Init GPIO)
+// ------------------------------------------------------------
 void HCSR04_Init() {
 
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;	// IOPBEN: IO port B clock enable
@@ -34,6 +38,9 @@ void HCSR04_Init() {
 	GPIOB->ODR &= ~GPIO_ODR_ODR9;		// pull-down
 }
 
+// ------------------------------------------------------------
+// Variant 1 (TRIG and Read with loops)
+// ------------------------------------------------------------
 uint32_t HCSR04_Read() {
 
 	__disable_irq();
@@ -69,7 +76,7 @@ uint32_t HCSR04_Read() {
 }
 
 // ------------------------------------------------------------
-// Variant 2 (with external interrupt)
+// Variant 2 (Init with external interrupt)
 // ------------------------------------------------------------
 void HCSR04_InitIT() {
 
@@ -105,7 +112,9 @@ void HCSR04_InitIT() {
 	NVIC_EnableIRQ(TIM2_IRQn);						// Enable External Interrupt, TIM2 global Interrupt
 }
 
-// TRIG with GPIO and delay
+// ------------------------------------------------------------
+// Variant 2 (TRIG with GPIO and delay)
+// ------------------------------------------------------------
 uint32_t HCSR04_ReadIT() {
 
 	if (echo_flag == 0) {
@@ -126,7 +135,9 @@ uint32_t HCSR04_ReadIT() {
 	return 0;
 }
 
-// TRIG with PWM
+// ------------------------------------------------------------
+// Variant 3 (Init and TRIG with PWM and external interrupt)
+// ------------------------------------------------------------
 void HCSR04_InitPWM() {
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;			// IOPBEN: IO port B clock enable
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;			// AFIOEN: Alternate function IO clock enable
@@ -168,13 +179,16 @@ void HCSR04_InitPWM() {
 	NVIC_EnableIRQ(TIM2_IRQn);						// Enable External Interrupt, TIM2 global Interrupt
 }
 
+// ------------------------------------------------------------
+// Variant 3 (Read with PWM)
+// ------------------------------------------------------------
 uint32_t HCSR04_ReadPWM() {
 	return distance;
 }
 
 void EXTI9_5_IRQHandler() {
 
-//	// DWT
+//	// DWT variant
 //	if (EXTI->PR & EXTI_PR_PR9) {
 //		EXTI->PR |= EXTI_PR_PR9;	// 1: selected trigger request occurred. This bit is cleared by writing a '1' into the bit.
 //
@@ -190,7 +204,7 @@ void EXTI9_5_IRQHandler() {
 //		}
 //	}
 
-	// TIM2
+	// TIM2 variant
 	if (EXTI->PR & EXTI_PR_PR9) {
 		EXTI->PR |= EXTI_PR_PR9;	// 1: selected trigger request occurred. This bit is cleared by writing a '1' into the bit.
 
