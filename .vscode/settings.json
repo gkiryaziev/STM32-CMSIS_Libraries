@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "main.h": "c",
+        "rotaryencoder.h": "c",
+        "dht11.h": "c",
+        "lcd1602_i2c.h": "c",
+        "pcf8574t.h": "c"
+    }
+}

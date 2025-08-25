@@ -1,5 +1,17 @@
+/*
+ * ADS1115.h
+ *
+ * Updated at: 28.06.2025
+ * Created on: 10.06.2019
+ *     Author: Admin
+ */
+
 #ifndef ADS1115_H_
 #define ADS1115_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #include "i2c.h"
 #include "delay.h"
@@ -82,64 +94,68 @@
  * ----------------------------------------------------
  */
 
-#define ADS1115_ADDRESS				0x48
+#define ADS1115_ADDRESS                0x48
 
-#define ADS1115_REG_CONVERSION		0x00
-#define ADS1115_REG_CONFIG			0x01
-#define ADS1115_REG_LO_THRESH		0x02
-#define ADS1115_REG_HI_THRESH		0x03
+#define ADS1115_REG_CONVERSION         0x00
+#define ADS1115_REG_CONFIG             0x01
+#define ADS1115_REG_LO_THRESH          0x02
+#define ADS1115_REG_HI_THRESH          0x03
 
-#define ADS1115_OS_Pos				(15U)
-#define ADS1115_OS_Msk				(0x1U << ADS1115_OS_Pos)
-#define ADS1115_OS					ADS1115_OS_Msk
+#define ADS1115_OS_Pos                (15U)
+#define ADS1115_OS_Msk                (0x1U << ADS1115_OS_Pos)
+#define ADS1115_OS                     ADS1115_OS_Msk
 
-#define ADS1115_MUX_Pos				(12U)
-#define ADS1115_MUX_Msk				(0x7U << ADS1115_MUX_Pos)
-#define ADS1115_MUX					ADS1115_MUX_Msk
-#define ADS1115_MUX_0				(0x1U << ADS1115_MUX_Pos)
-#define ADS1115_MUX_1				(0x2U << ADS1115_MUX_Pos)
-#define ADS1115_MUX_2				(0x4U << ADS1115_MUX_Pos)
+#define ADS1115_MUX_Pos                (12U)
+#define ADS1115_MUX_Msk                (0x7U << ADS1115_MUX_Pos)
+#define ADS1115_MUX                    ADS1115_MUX_Msk
+#define ADS1115_MUX_0                  (0x1U << ADS1115_MUX_Pos)
+#define ADS1115_MUX_1                  (0x2U << ADS1115_MUX_Pos)
+#define ADS1115_MUX_2                  (0x4U << ADS1115_MUX_Pos)
 
-#define ADS1115_PGA_Pos				(9U)
-#define ADS1115_PGA_Msk				(0x7U << ADS1115_PGA_Pos)
-#define ADS1115_PGA					ADS1115_PGA_Msk
-#define ADS1115_PGA_0				(0x1U << ADS1115_PGA_Pos)
-#define ADS1115_PGA_1				(0x2U << ADS1115_PGA_Pos)
-#define ADS1115_PGA_2				(0x4U << ADS1115_PGA_Pos)
+#define ADS1115_PGA_Pos                (9U)
+#define ADS1115_PGA_Msk                (0x7U << ADS1115_PGA_Pos)
+#define ADS1115_PGA                    ADS1115_PGA_Msk
+#define ADS1115_PGA_0                  (0x1U << ADS1115_PGA_Pos)
+#define ADS1115_PGA_1                  (0x2U << ADS1115_PGA_Pos)
+#define ADS1115_PGA_2                  (0x4U << ADS1115_PGA_Pos)
 
-#define ADS1115_MODE_Pos			(8U)
-#define ADS1115_MODE_Msk			(0x1U << ADS1115_MODE_Pos)
-#define ADS1115_MODE				ADS1115_MODE_Msk
+#define ADS1115_MODE_Pos               (8U)
+#define ADS1115_MODE_Msk               (0x1U << ADS1115_MODE_Pos)
+#define ADS1115_MODE                   ADS1115_MODE_Msk
 
-#define ADS1115_DR_Pos				(5U)
-#define ADS1115_DR_Msk				(0x7U << ADS1115_DR_Pos)
-#define ADS1115_DR					ADS1115_DR_Msk
-#define ADS1115_DR_0				(0x1U << ADS1115_DR_Pos)
-#define ADS1115_DR_1				(0x2U << ADS1115_DR_Pos)
-#define ADS1115_DR_2				(0x4U << ADS1115_DR_Pos)
+#define ADS1115_DR_Pos                 (5U)
+#define ADS1115_DR_Msk                 (0x7U << ADS1115_DR_Pos)
+#define ADS1115_DR                     ADS1115_DR_Msk
+#define ADS1115_DR_0                   (0x1U << ADS1115_DR_Pos)
+#define ADS1115_DR_1                   (0x2U << ADS1115_DR_Pos)
+#define ADS1115_DR_2                   (0x4U << ADS1115_DR_Pos)
 
-#define ADS1115_COMP_MODE_Pos		(4U)
-#define ADS1115_COMP_MODE_Msk		(0x1U << ADS1115_COMP_MODE_Pos)
-#define ADS1115_COMP_MODE			ADS1115_COMP_MODE_Msk
+#define ADS1115_COMP_MODE_Pos          (4U)
+#define ADS1115_COMP_MODE_Msk          (0x1U << ADS1115_COMP_MODE_Pos)
+#define ADS1115_COMP_MODE              ADS1115_COMP_MODE_Msk
 
-#define ADS1115_COMP_POL_Pos		(3U)
-#define ADS1115_COMP_POL_Msk		(0x1U << ADS1115_COMP_POL_Pos)
-#define ADS1115_COMP_POL			ADS1115_COMP_POL_Msk
+#define ADS1115_COMP_POL_Pos           (3U)
+#define ADS1115_COMP_POL_Msk           (0x1U << ADS1115_COMP_POL_Pos)
+#define ADS1115_COMP_POL               ADS1115_COMP_POL_Msk
 
-#define ADS1115_COMP_LAT_Pos		(2U)
-#define ADS1115_COMP_LAT_Msk		(0x1U << ADS1115_COMP_LAT_Pos)
-#define ADS1115_COMP_LAT			ADS1115_COMP_LAT_Msk
+#define ADS1115_COMP_LAT_Pos           (2U)
+#define ADS1115_COMP_LAT_Msk           (0x1U << ADS1115_COMP_LAT_Pos)
+#define ADS1115_COMP_LAT               ADS1115_COMP_LAT_Msk
 
-#define ADS1115_COMP_QUE_Pos		(0U)
-#define ADS1115_COMP_QUE_Msk		(0x3U << ADS1115_COMP_QUE_Pos)
-#define ADS1115_COMP_QUE			ADS1115_COMP_QUE_Msk
-#define ADS1115_COMP_QUE_0			(0x1U << ADS1115_COMP_QUE_Pos)
-#define ADS1115_COMP_QUE_1			(0x2U << ADS1115_COMP_QUE_Pos)
+#define ADS1115_COMP_QUE_Pos           (0U)
+#define ADS1115_COMP_QUE_Msk           (0x3U << ADS1115_COMP_QUE_Pos)
+#define ADS1115_COMP_QUE               ADS1115_COMP_QUE_Msk
+#define ADS1115_COMP_QUE_0             (0x1U << ADS1115_COMP_QUE_Pos)
+#define ADS1115_COMP_QUE_1             (0x2U << ADS1115_COMP_QUE_Pos)
 
 void ADS1115_ReadRegisters(uint8_t address, uint8_t *data, uint8_t size);
 void ADS1115_WriteRegisters(uint8_t address, uint8_t *data, uint8_t size);
 uint8_t ADS1115_GetStatus(void);
 uint16_t ADS1115_ReadADC(uint8_t channel);
 float ADS1115_Read(uint8_t channel);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* ADS1115_H_ */

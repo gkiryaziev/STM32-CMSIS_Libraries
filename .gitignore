@@ -1,8 +1,1 @@
-.settings/
-Debug/
-Release/
-.cproject
-.project
-*.launch
-*.cfg
-*.txt
+.pio

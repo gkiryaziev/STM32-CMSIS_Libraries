@@ -1,0 +1,55 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "c:/Users/Admin/Desktop/as1/src",
+                "c:/Users/Admin/Desktop/as1/lib/LED_DISPLAY",
+                "c:/Users/Admin/Desktop/as1/lib/74HC595",
+                "c:/Users/Admin/Desktop/as1/lib/LCD1602",
+                "c:/Users/Admin/Desktop/as1/lib/PCF8574T",
+                "c:/Users/Admin/Desktop/as1/include",
+                "D:/Software/platformio_core/packages/framework-cmsis@2.50501.200527/CMSIS/Include",
+                "D:/Software/platformio_core/packages/framework-cmsis-stm32f1/Include",
+                "D:/Software/platformio_core/lib/ArduinoJson/src",
+                "D:/Software/platformio_core/lib/RadioLib/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "c:/Users/Admin/Desktop/as1/src",
+                    "c:/Users/Admin/Desktop/as1/lib/LED_DISPLAY",
+                    "c:/Users/Admin/Desktop/as1/lib/74HC595",
+                    "c:/Users/Admin/Desktop/as1/lib/LCD1602",
+                    "c:/Users/Admin/Desktop/as1/lib/PCF8574T",
+                    "c:/Users/Admin/Desktop/as1/include",
+                    "D:/Software/platformio_core/packages/framework-cmsis@2.50501.200527/CMSIS/Include",
+                    "D:/Software/platformio_core/packages/framework-cmsis-stm32f1/Include",
+                    "D:/Software/platformio_core/lib/ArduinoJson/src",
+                    "D:/Software/platformio_core/lib/RadioLib/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60118",
+                "STM32F103xB",
+                "STM32F1",
+                "F_CPU=72000000L",
+                ""
+            ],
+            "compilerPath": "D:/Software/platformio_core/packages/toolchain-gccarmnoneeabi@1.70201.0/bin/arm-none-eabi-gcc.exe",
+            "compilerArgs": [
+                "-mthumb",
+                "-mcpu=cortex-m3",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}

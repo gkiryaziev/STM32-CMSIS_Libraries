@@ -1,116 +1,94 @@
+
 #include "main.h"
 
-#define LED1 12
-#define LED2 14
+Delay_TypeDef pc13 = {0};
+Delay_TypeDef usart1 = {0};
+Delay_TypeDef lcd1 = {0};
+uint8_t pc13_state = 1;
 
-uint8_t led1_s = 0, led2_s = 0;                  // states
-Delay_TypeDef led1_d, led2_d, usart1_d, dht11_d; // delays
-char usart_buffer[USART1_BUFFER_SIZE];           // set buffer size in usart.h file
-DHT11_TypeDef dht11;                             // DHT structure
 
-// Encoder 0
-Delay_TypeDef encoder0_d;
-RotaryEncoder_TypeDef encoder0;
-int8_t encoder0_count, encoder0_value;
+char received_line_buffer[USART1_BUFFER_SIZE];
 
-void usart1_process() {
-	switch (usart_buffer[0]) {
-	case 'L':                                    // PC13
-		if (usart_buffer[1] == '?') {
-			char pc13_buffer[16];
-			sprintf(pc13_buffer, "L:%d\n", GPIO_ReadPin(GPIOC, 13));
-			USART1_SendString(pc13_buffer);
-		} else if (usart_buffer[1] == '=') {
-			if (usart_buffer[2] == '0') {
-				GPIO_PC13_Off();
-				USART1_SendString("L:0\n");
-			}
-			if (usart_buffer[2] == '1') {
-				GPIO_PC13_On();
-				USART1_SendString("L:1\n");
-			}
-		}
-		break;
-	case 'D':                                    // DHT
-		if (usart_buffer[1] == '?') {
-		}
-		break;
-	default:
-		USART1_SendString(usart_buffer);         // Send data back
-		USART1_SendChar('\n');
-		break;
-	}
-}
+uint16_t counter1 = 0;
+uint16_t counter2 = 10;
+uint16_t counter3 = 20;
+uint16_t counter4 = 30;
 
 int main() {
 
-	RCC_Init();
-	DWT_Init();
-	GPIO_Init();
-	USART1_Init();
+    RCC_Init();
+    DWT_Init();
+    GPIO_Init();
+    USART1_Init();
+    
+    I2C1_Init(I2C_STANDARD);
+    LCD1602_Init(LCD1602_LED_ON);
 
-	// Encoders
-	RotaryEncoder_Init(&encoder0, GPIOB, 3, GPIOB, 4);	// encoder, clk port/pin, dt port/pin
+    LCD1602_Clear();
+    LCD1602_CursorPos(0, 0);
+    LCD1602_SendString("Hello, World!");
 
-	// for two LEDs
-	GPIO_Enable(GPIOB);
-	GPIO_SetMode_Output_2MHz_PP(GPIOB, LED1);
-	GPIO_SetMode_Output_10MHz_PP(GPIOB, LED2);
+    LCD1602_CursorPos(1, 0);
+    LCD1602_SendString("STM32 LCD I2C");
 
-	for (;;) {
+    DWT_delay_ms(2000);
 
-		// non blocking delay, LED1
-		if (DWT_nb_timeout(&led1_d)) {
-			GPIO_WritePin(GPIOB, LED1, led1_s);
-			led1_s = !led1_s;
-			DWT_nb_delay_ms(&led1_d, 300);
-		}
+    LCD1602_Led(LCD1602_LED_OFF);
+    DWT_delay_ms(1000);
+    LCD1602_Led(LCD1602_LED_ON);
+    DWT_delay_ms(1000);
 
-		// non blocking delay, LED2
-		if (DWT_nb_timeout(&led2_d)) {
-			GPIO_WritePin(GPIOB, LED2, led2_s);
-			led2_s = !led2_s;
-			DWT_nb_delay_ms(&led2_d, 750);
-		}
+    LCD1602_Clear();
+    LCD1602_CursorPos(0, 0);
+    LCD1602_SendString("Custom Char:");
+    LCD1602_CreateChar(lcd1602CustomChars[LCD1602_BATTARY], LCD1602_BATTARY);
+    LCD1602_CursorPos(1, 0);
+    LCD1602_SendChar(LCD1602_BATTARY);
 
-		// non blocking delay, USART1
-		if (DWT_nb_timeout(&usart1_d)) {
-			if (USART1_ReadString(usart_buffer)) {
-				usart1_process();
-			}
-			DWT_nb_delay_ms(&usart1_d, 50);
-		}
+    DWT_delay_ms(2000);
 
-		// non blocking delay, DHT11
-		if (DWT_nb_timeout(&dht11_d)) {
-			if (DHT11_read(&dht11)) {
-				char dht_buffer[16];
-				sprintf(dht_buffer, "%dDHT%d\n", dht11.temperature,
-						dht11.humidity);
-				USART1_SendString(dht_buffer);
-			}
-			DWT_nb_delay_ms(&dht11_d, 2000);
-		}
 
-		// non blocking delay, Rotary Encoder
-		if (DWT_nb_timeout(&encoder0_d)) {
-			if ((encoder0_value = RotaryEncoder_Read(&encoder0))) {
-				encoder0_count += encoder0_value;
-				char enc_buffer[20];
-				if (encoder0.current_state == 0xb) {
-					sprintf(enc_buffer, "%d - CW - %02x\n", encoder0_count,
-							encoder0.transition);
-					USART1_SendString(enc_buffer);
-				}
-				if (encoder0.current_state == 0x7) {
-					sprintf(enc_buffer, "%d - CCW - %02x\n", encoder0_count,
-							encoder0.transition);
-					USART1_SendString(enc_buffer);
-				}
-			}
-			DWT_nb_delay_ms(&encoder0_d, 1);
-		}
-	}
+    for (;;) {
 
-	return 0;
+        // non blocking delay, PC13
+        if (DWT_nb_timeout(&pc13)) {
+            GPIO_WritePin(GPIOC, 13, pc13_state);
+            pc13_state = !pc13_state;
+            DWT_nb_delay_ms(&pc13, 300);
+        }
+
+        // USART1
+        if (DWT_nb_timeout(&usart1)) {
+            uint16_t bytes_read = USART1_ReadString(received_line_buffer);
+            if (bytes_read > 0) {
+                USART1_SendString("Received: ");
+                USART1_SendString(received_line_buffer);
+                USART1_SendString("\n");
+                if (strcmp(received_line_buffer, "0") == 0) counter1 = 0;
+            }
+            DWT_nb_delay_ms(&usart1, 50);
+        }
+
+        // LCD1
+        if (DWT_nb_timeout(&lcd1)) {
+            char lineBuffer[24];
+
+            sprintf(lineBuffer, "%-7d%-7d", counter1, counter2);
+            LCD1602_CursorPos(0, 0);
+            LCD1602_SendString(lineBuffer);
+
+            sprintf(lineBuffer, "%-7d%-7d", counter3, counter4);
+            LCD1602_CursorPos(1, 0);
+            LCD1602_SendString(lineBuffer);
+
+            counter1++;
+            counter2++;
+            counter3++;
+            counter4++;
+            
+            DWT_nb_delay_ms(&lcd1, 1000);
+        }
+    }
+
+    return 0;
 }

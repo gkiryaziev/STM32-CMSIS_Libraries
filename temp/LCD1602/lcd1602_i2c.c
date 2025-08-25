@@ -31,7 +31,7 @@ void LCD1602_Init(LCD1602_LedState led_state) {
     LCD1602_SendCommand_8bit(0x30); DWT_delay_ms(1);   // 8-bit mode
     LCD1602_SendCommand_8bit(0x20); DWT_delay_ms(1);   // 4-bit mode
     
-    LCD1602_SendCommand(0x28);                         // 4-bit mode, 2 lines, 5x8 font
+	LCD1602_SendCommand(0x28);                         // 4-bit mode, 2 lines, 5x8 font
     LCD1602_SendCommand(0x08);                         // display off
     LCD1602_Clear();                                   // display clear
     LCD1602_SendCommand(0x06);                         // cursor increment, no shift
