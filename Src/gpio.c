@@ -59,7 +59,7 @@ uint16_t GPIO_ReadPin(GPIO_TypeDef *GPIOx, uint8_t pin) {
 // -----------------------------------------
 void GPIO_Enable(GPIO_TypeDef *GPIOx) {
 
-	if (GPIOx == GPIOA) RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;	// 1: IO port A clock enabled
+	if (GPIOx == GPIOA) RCC->APB2ENR |= RCC_APB2ENR_IOPAEN; // 1: IO port A clock enabled
 	if (GPIOx == GPIOB) RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;	// 1: IO port B clock enabled
 	if (GPIOx == GPIOC) RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;	// 1: IO port C clock enabled
 }

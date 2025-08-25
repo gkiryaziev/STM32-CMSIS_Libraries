@@ -75,9 +75,9 @@ uint8_t DHT11_read(DHT11_TypeDef *dht11) {
 		uint8_t hum_b2 = DHT11_read_byte();
 		uint8_t tmp_b1 = DHT11_read_byte();
 		uint8_t tmp_b2 = DHT11_read_byte();
-		uint16_t c_sum = DHT11_read_byte();
+		uint8_t ch_sum = DHT11_read_byte();
 
-		if (c_sum == (hum_b1 + hum_b2 + tmp_b1 + tmp_b2)) {
+		if (ch_sum == (uint8_t)(hum_b1 + hum_b2 + tmp_b1 + tmp_b2)) {
 			dht11->humidity = hum_b1;
 			dht11->temperature = tmp_b1;
 			return 1;
